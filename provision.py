@@ -69,6 +69,7 @@ STUDENTS = [
     {"slug": "martin-germeshausen",  "display": "Martin Germeshausen"},
     {"slug": "sebastian-knaak",      "display": "Sebastian Knaak"},
     {"slug": "soeren-firlus",        "display": "Sören Firlus"},
+    {"slug": "luca-fuelbier",        "display": "Luca Fülbier"},
 ]
 
 # ─────────────────────────────────────────────────────────────────────────────

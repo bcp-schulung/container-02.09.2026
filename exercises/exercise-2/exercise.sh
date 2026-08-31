@@ -9,3 +9,5 @@ mkdir app
 sudo docker build -t app:v1 .
 
 sudo docker images
+
+sudo trivy app:v1

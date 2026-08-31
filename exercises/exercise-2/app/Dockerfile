@@ -1,3 +1,3 @@
-FROM nginx:1.31.4
+FROM nginx:alpine
 
-RUN apt update && apt upgrade -y
+RUN apk update && apk upgrade

@@ -19,3 +19,11 @@ spec:
           image: harbor.container.it-scholar.com/seminar/ben-coeppicus:v4
           ports:
             - containerPort: 8080
+          volumeMounts:
+            - name: html
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+      volumes:
+        - name: html
+          configMap:
+            name: ben-coeppicus-html

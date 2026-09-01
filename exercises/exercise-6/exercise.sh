@@ -6,3 +6,15 @@ kubectl get pods -o wide
 kubectl get svc ben-coeppicus
 kubectl get nodes -o wide
 kubectl describe svc ben-coeppicus
+
+kubectl delete deployment ben-coeppicus
+kubectl delete svc ben-coeppicus
+
+kubectl apply -f deployment.yaml
+kubectl apply -f service.yaml
+
+kubectl get pods -o wide
+kubectl get svc ben-coeppicus
+kubectl describe svc ben-coeppicus
+
+kubectl get nodes -o wide

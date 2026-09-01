@@ -1,0 +1,11 @@
+services:
+  app:
+    image: harbor.container.it-scholar.com/seminar/ben-coeppicus:v4
+    container_name: app
+    ports:
+      - 9191:8080
+    volumes:
+      - ./index.html:/usr/share/nginx/html/index.html
+  backend:
+    image: ubuntu:24.04
+    entrypoint: ["tail", "-f", "/dev/null"]

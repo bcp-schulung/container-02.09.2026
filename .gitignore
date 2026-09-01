@@ -9,6 +9,15 @@ student-credentials/
 *.kubeconfig
 *.talosconfig
 
+# Terraform
+terraform/.terraform/
+terraform/.terraform.lock.hcl
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/kubeconfig
+terraform/talosconfig
+terraform/*.tfvars
+
 # Python
 __pycache__/
 *.py[cod]
@@ -20,3 +29,4 @@ env/
 # macOS
 .DS_Store
 **/.DS_Store
+terraform/tfplan

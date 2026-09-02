@@ -3,6 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ .name }}-html
+  namespace: {{ $.Values.namespace }}
 data:
   index.html: |
 {{ .html | indent 4 }}

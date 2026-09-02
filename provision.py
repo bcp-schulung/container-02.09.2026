@@ -557,9 +557,13 @@ def configure_vm(ip: str, slug: str, password: str) -> None:
         c.run("curl -fsSL https://code-server.dev/install.sh | sh", hide=True)
 
         log(f"  [{slug}] Configuring code-server ...")
+        # Pass both dirs explicitly: install -d only chowns dirs named as
+        # arguments, not implicitly-created parents (leaves ~/.config
+        # root-owned, blocking student-run tools like Helm from writing
+        # their own config dirs, e.g. ~/.config/helm, under it).
         c.run(
             "install -d -m 755 -o student -g student "
-            "/home/student/.config/code-server",
+            "/home/student/.config /home/student/.config/code-server",
             hide=True,
         )
         put_text(c, cs_config, "/home/student/.config/code-server/config.yaml")

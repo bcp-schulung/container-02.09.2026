@@ -1,0 +1,21 @@
+image:
+  repository: harbor.container.it-scholar.com/seminar/ben-coeppicus
+  tag: v4
+
+replicaCount: 3
+
+components:
+  - name: frontend
+    html: |
+      <h1>Frontend</h1>
+  - name: backend
+    html: |
+      <h1>Backend</h1>
+  - name: database
+    html: |
+      <h1>Database</h1>
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080

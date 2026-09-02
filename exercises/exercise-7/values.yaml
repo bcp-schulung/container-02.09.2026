@@ -21,3 +21,10 @@ service:
   type: ClusterIP
   port: 8080
   targetPort: 8080
+
+ingress:
+  enabled: true
+  className: traefik
+  clusterIssuer: letsencrypt-staging
+  host: ben-coeppicus.traefik.container.it-scholar.com
+  tlsSecretName: ben-coeppicus-frontend-tls

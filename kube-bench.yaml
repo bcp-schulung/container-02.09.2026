@@ -1,0 +1,142 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kube-bench
+  labels:
+    # kube-bench needs hostPID + hostPath access to read node/control-plane files
+    pod-security.kubernetes.io/enforce: privileged
+---
+# Talos Linux layout (verified via talosctl ls on k8s-control-1):
+# present: /etc/kubernetes, /etc/cni/net.d, /var/lib/cni, /var/lib/etcd, /var/lib/kubelet, /opt/cni/bin, /usr/bin
+# absent:  /etc/systemd, /lib/systemd, /srv/kubernetes, /etc/passwd, /etc/group,
+#          /var/lib/kube-scheduler, /var/lib/kube-controller-manager (no systemd, no host user db, static-pod components have no separate data dir)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kube-bench-master
+  namespace: kube-bench
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: kube-bench-master
+    spec:
+      hostPID: true
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node-role.kubernetes.io/control-plane
+                    operator: Exists
+      tolerations:
+        - key: node-role.kubernetes.io/control-plane
+          operator: Exists
+          effect: NoSchedule
+      containers:
+        - name: kube-bench
+          image: docker.io/aquasec/kube-bench:v0.16.0
+          command: ["kube-bench", "run", "--targets", "master,etcd", "--version", "1.24"]
+          volumeMounts:
+            - name: var-lib-cni
+              mountPath: /var/lib/cni
+              readOnly: true
+            - name: var-lib-etcd
+              mountPath: /var/lib/etcd
+              readOnly: true
+            - name: var-lib-kubelet
+              mountPath: /var/lib/kubelet
+              readOnly: true
+            - name: etc-kubernetes
+              mountPath: /etc/kubernetes
+              readOnly: true
+            - name: usr-bin
+              mountPath: /usr/local/mount-from-host/bin
+              readOnly: true
+            - name: etc-cni-netd
+              mountPath: /etc/cni/net.d/
+              readOnly: true
+            - name: opt-cni-bin
+              mountPath: /opt/cni/bin/
+              readOnly: true
+      restartPolicy: Never
+      volumes:
+        - name: var-lib-cni
+          hostPath:
+            path: "/var/lib/cni"
+        - name: var-lib-etcd
+          hostPath:
+            path: "/var/lib/etcd"
+        - name: var-lib-kubelet
+          hostPath:
+            path: "/var/lib/kubelet"
+        - name: etc-kubernetes
+          hostPath:
+            path: "/etc/kubernetes"
+        - name: usr-bin
+          hostPath:
+            path: "/usr/bin"
+        - name: etc-cni-netd
+          hostPath:
+            path: "/etc/cni/net.d/"
+        - name: opt-cni-bin
+          hostPath:
+            path: "/opt/cni/bin/"
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: kube-bench-node
+  namespace: kube-bench
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app: kube-bench-node
+    spec:
+      hostPID: true
+      containers:
+        - name: kube-bench
+          image: docker.io/aquasec/kube-bench:v0.16.0
+          command: ["kube-bench", "run", "--targets", "node", "--version", "1.24"]
+          volumeMounts:
+            - name: var-lib-cni
+              mountPath: /var/lib/cni
+              readOnly: true
+            - name: var-lib-kubelet
+              mountPath: /var/lib/kubelet
+              readOnly: true
+            - name: etc-kubernetes
+              mountPath: /etc/kubernetes
+              readOnly: true
+            - name: usr-bin
+              mountPath: /usr/local/mount-from-host/bin
+              readOnly: true
+            - name: etc-cni-netd
+              mountPath: /etc/cni/net.d/
+              readOnly: true
+            - name: opt-cni-bin
+              mountPath: /opt/cni/bin/
+              readOnly: true
+      restartPolicy: Never
+      volumes:
+        - name: var-lib-cni
+          hostPath:
+            path: "/var/lib/cni"
+        - name: var-lib-kubelet
+          hostPath:
+            path: "/var/lib/kubelet"
+        - name: etc-kubernetes
+          hostPath:
+            path: "/etc/kubernetes"
+        - name: usr-bin
+          hostPath:
+            path: "/usr/bin"
+        - name: etc-cni-netd
+          hostPath:
+            path: "/etc/cni/net.d/"
+        - name: opt-cni-bin
+          hostPath:
+            path: "/opt/cni/bin/"
